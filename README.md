@@ -4,7 +4,7 @@ This repository contains the public analysis script used for the MSc thesis inve
 
 ## Contents
 
-- `02_analysis_CLBP_main_public_clean.R`: R script for data preparation, variable harmonisation, descriptive analyses, correlation analyses, multiple linear regression models, sensitivity analysis, tables, and supplementary figures.
+- `02_analysis_CLBP_main_public_clean_eng.R`: R script for data preparation, variable harmonisation, descriptive analyses, correlation analyses, multiple linear regression models, sensitivity analysis, tables, and supplementary figures.
 
 ## Data availability
 
