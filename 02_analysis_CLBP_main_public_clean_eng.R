@@ -1559,3 +1559,106 @@ pooled_data %>%
     n = n(),
     missing_regression = sum(!complete.cases(nrs, frebaq, tpd, age, sex, pain_duration_months))
   )
+# ---------------------------------------------------------
+# 9. Main manuscript figure.
+# Adjusted associations of FreBAQ and TPD with pain intensity.
+# Average marginal predictions from the primary regression model.
+# ---------------------------------------------------------
+
+library(marginaleffects)
+library(ggplot2)
+library(patchwork)
+
+# -----------------------------
+# Panel A: FreBAQ
+# -----------------------------
+
+pred_frebaq <- avg_predictions(
+  model_main,
+  newdata = datagrid(
+    frebaq = seq(
+      min(model_data$frebaq, na.rm = TRUE),
+      max(model_data$frebaq, na.rm = TRUE),
+      length.out = 100
+    ),
+    grid_type = "counterfactual"
+  ),
+  by = "frebaq"
+)
+
+plot_frebaq <- ggplot(
+  pred_frebaq,
+  aes(x = frebaq, y = estimate)
+) +
+  geom_ribbon(
+    aes(ymin = conf.low, ymax = conf.high),
+    alpha = 0.20
+  ) +
+  geom_line(linewidth = 1) +
+  labs(
+    x = "FreBAQ total score",
+    y = "Adjusted predicted pain intensity (NRS)",
+    title = "A. Body perception (FreBAQ)"
+  ) +
+  coord_cartesian(ylim = c(0, 10)) +
+  theme_classic(base_size = 12)
+
+# -----------------------------
+# Panel B: TPD
+# -----------------------------
+
+pred_tpd <- avg_predictions(
+  model_main,
+  newdata = datagrid(
+    tpd = seq(
+      min(model_data$tpd, na.rm = TRUE),
+      max(model_data$tpd, na.rm = TRUE),
+      length.out = 100
+    ),
+    grid_type = "counterfactual"
+  ),
+  by = "tpd"
+)
+
+plot_tpd <- ggplot(
+  pred_tpd,
+  aes(x = tpd, y = estimate)
+) +
+  geom_ribbon(
+    aes(ymin = conf.low, ymax = conf.high),
+    alpha = 0.20
+  ) +
+  geom_line(linewidth = 1) +
+  labs(
+    x = "Two-point discrimination threshold (mm)",
+    y = NULL,
+    title = "B. Tactile acuity (TPD)"
+  ) +
+  coord_cartesian(ylim = c(0, 10)) +
+  theme_classic(base_size = 12)
+
+# -----------------------------
+# Combine panels
+# -----------------------------
+
+figure_adjusted <- plot_frebaq + plot_tpd
+
+figure_adjusted
+
+# -----------------------------
+# Save figure
+# -----------------------------
+
+dir.create(
+  "outputs/figures",
+  recursive = TRUE,
+  showWarnings = FALSE
+)
+
+ggsave(
+  filename = "outputs/figures/Figure_1_adjusted_associations.png",
+  plot = figure_adjusted,
+  width = 10,
+  height = 5,
+  dpi = 300
+)
